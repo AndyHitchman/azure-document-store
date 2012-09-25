@@ -1,0 +1,39 @@
+Feature: Advanced Security
+  In order to ensure that all access is made by authenticated users of Azure storage accounts
+  We need to control access to the storage account with a shared access signature
+
+  Azure storage does not presently have an entirely suitable access control mechanism
+  for the document store. 
+
+  It is possible to use storage account keys to access an entire account, however this is too
+  course grained and privileged to provide to all clients of the document store.
+
+  Shared Access Signatures (SAS), on the other hand, provide fine grained control of access to blob
+  containers and tables. However, it is not possible to create a single signature that spans many
+  containers or tables.
+
+  Therefore the Azure Document Store uses a read-only SAS per client to a security container. 
+  The security container contains a set of Shared Access Signatures for each client to each 
+  container and index table used by the Azure Document store internally.
+
+  The Azure Document Store creates all signatures using a Stored Access Policy where the expiration
+  is managed by the policy.
+
+  This policy thereby grants the Azure Storage Account administrator the ability to revoke all 
+  access by clients and by the Azure Document Store program to the underlying storage.
+
+  To initialise and manage security within the Azure Document Store, the administrator runs
+  a tool that takes a storage account key. This tool will create the ads-security table and
+  stored access policy.
+
+  Because Shared Access Signatures can only be created from a storage account key, all
+  security management is performed by this independent tool (which we recommend you inspect 
+  the source and audit for security integrity).
+
+  The storage account key used must be preserved so that the generated signatures remain
+  valid. It is recommended that the secondary key is used for this purpose and no other (thereby
+  ensuring no other reason to regenerate the key). Should the key be regenerated, the administrator
+  must refresh all signatures using the tool.
+
+  This advanced security is designed for shared hosting.
+
