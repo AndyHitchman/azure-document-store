@@ -1,7 +1,7 @@
 path = require 'path'
 
 module.exports = ->
-  @World = require('../support/world.coffee').World
+  #@World = require('../support/world.coffee').World
 
   @Given /^the '([a-z0-9-]{3,63})' container exists$/, (containerName, next) ->
     @blobService.deleteContainer containerName, (err) =>
