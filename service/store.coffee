@@ -16,16 +16,18 @@ module.exports = class Store
     #Using an intermediate stream.
     intermediate = new pipette.Pipe()
     valve = new pipette.Valve intermediate.reader, {paused: true}
-    
-    valve.on 'data', (chunk) ->
-      res.write chunk
-    valve.on 'end', ->
-      res.end()
+    valve.on 'data', (chunk) -> res.write chunk
+    valve.on 'end', -> res.end()
 
     @blobService.getBlobToStream container, blobPath, intermediate.writer, (err, blobRef) ->
       return endError err, res if err?
 
-      res.writeHead 200
+      res.writeHead 200, 
+        'Content-Type' : blobRef.contentType
+        'Content-Length' : blobRef.contentLength
+        'ETag' : blobRef.etag
+        'Last-Modified' : blobRef.lastModified
+
       valve.resume()
 
   splitContainerAndPath: (reqUrl) ->

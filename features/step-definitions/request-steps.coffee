@@ -15,10 +15,16 @@ module.exports = ->
       @response = res
       return next.fail err if err? 
 
+      if res.buffered
+        @responseBody = res.text
+        return next()
+
       res.on 'data', (chunk) =>
+        console.log "chunk"
         @responseBody += chunk
 
       res.on 'end', ->
+        console.log "end"
         next()
 
   @Then /^the response content should match the local document '(.*?)'$/, (localPath, next) ->
@@ -27,3 +33,7 @@ module.exports = ->
       return next.fail err if err? 
       return next.fail "Content does not match expected local file" if fileContent.toString() != @responseBody
       next()
+
+  @Then /^the response content type should be '(.*?)'$/, (contentType, next) ->
+    return next.fail "Content-Type does not match #{contentType}" if contentType != @response.type
+    next()

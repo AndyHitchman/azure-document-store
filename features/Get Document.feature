@@ -13,6 +13,7 @@ Feature: Get Document
     When I get the document '/beer/timothytaylor/landlord.json'
     Then I should get a '200' response
     And the response content should match the local document 'beer/timothytaylor/landlord.json'
+    And the response content type should be 'text/json'
 
   Scenario:
     Given the storage container 'beer' has the local document 'beer/timothytaylor/landlord.json' of type 'text/json' at 'timothytaylor/landlord.json'
